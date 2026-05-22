@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="簡單、快速、免費的 YouTube 縮圖下載工具。貼上連結，即時下載所有尺寸的高清縮圖。">
+    <meta name="keywords" content="YouTube縮圖下載, thumbnail downloader, 下載YouTube封面">
+    
+    <meta property="og:title" content="YouTube 縮圖下載器">
+    <meta property="og:description" content="簡單快速地下載 YouTube 影片縮圖">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <title>YouTube 縮圖下載器</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+            background: #f8f7fc;
+            color: #1d1c1f;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 80px 0 56px;
+        }
+
+        .icon-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(82, 88, 150, 0.1);
+            padding: 8px 20px;
+            border-radius: 60px;
+            margin-bottom: 28px;
+        }
+
+        .icon-badge i {
+            font-size: 20px;
+            color: #525896;
+        }
+
+        .icon-badge span {
+            font-size: 13px;
+            font-weight: 500;
+            color: #525896;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 52px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #1d1c1f;
+            margin-bottom: 12px;
+        }
+
+        h1 i {
+            color: #525896;
+            font-size: 48px;
+            margin-right: 8px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            font-weight: 400;
+            color: #6e6d73;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* Input 區域 */
+        .input-wrapper {
+            max-width: 600px;
+            margin: 0 auto 48px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid #e8e6f0;
+            border-radius: 44px;
+            padding: 4px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .input-group:focus-within {
+            border-color: #525896;
+            box-shadow: 0 0 0 4px rgba(82, 88, 150, 0.1);
+        }
+
+        .input-group i {
+            margin-left: 20px;
+            font-size: 18px;
+            color: #aaa8b5;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 16px 16px 16px 8px;
+            font-size: 16px;
+            font-weight: 400;
+            background: transparent;
+            border: none;
+            border-radius: 44px;
+            color: #1d1c1f;
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: #aaa8b5;
+        }
+
+        .btn-primary {
+            padding: 12px 28px;
+            background: #525896;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary i {
+            font-size: 14px;
+        }
+
+        .btn-primary:hover {
+            background: #40446e;
+            transform: scale(0.98);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #e0dee8;
+            border-top-color: #525896;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #8e8d9a;
+            font-size: 14px;
+        }
+
+        /* 影片資訊 */
+        .video-info {
+            text-align: center;
+            margin-bottom: 48px;
+            padding: 16px 24px;
+            background: #ffffff;
+            border-radius: 60px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #e8e6f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .video-info i {
+            font-size: 22px;
+            color: #525896;
+        }
+
+        .video-info h3 {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1d1c1f;
+        }
+
+        /* 縮圖網格 - 加 shadow 分割 */
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .thumbnail-card {
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .thumbnail-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 32px -12px rgba(0, 0, 0, 0.15);
+            border-color: #e8e6f0;
+        }
+
+        .thumbnail-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #f3f2f8;
+        }
+
+        .thumbnail-meta {
+            padding: 18px 16px 20px;
+        }
+
+        .quality {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #525896;
+            margin-bottom: 8px;
+        }
+
+        .quality i {
+            font-size: 11px;
+        }
+
+        .resolution {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #8e8d9a;
+            margin-bottom: 18px;
+            font-family: monospace;
+        }
+
+        .resolution i {
+            font-size: 12px;
+        }
+
+        .btn-download {
+            width: 100%;
+            padding: 12px 0;
+            background: #f8f7fc;
+            border: 1px solid #e8e6f0;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1c1f;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-download i {
+            font-size: 14px;
+        }
+
+        .btn-download:hover {
+            background: #525896;
+            border-color: #525896;
+            color: white;
+        }
+
+        .btn-download:hover i {
+            color: white;
+        }
+
+        /* 錯誤提示 */
+        .error {
+            text-align: center;
+            background: #fff5f5;
+            border: 1px solid #ffe0e0;
+            border-radius: 20px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #dc2626;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 64px 0 56px;
+            border-top: 1px solid #e8e6f0;
+            margin-top: 64px;
+            color: #8e8d9a;
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: #8e8d9a;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #525896;
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none;
+        }
+
+        /* 響應式 */
+        @media (max-width: 640px) {
+            .header {
+                padding: 48px 0 32px;
+            }
+            
+            h1 {
+                font-size: 32px;
+            }
+            
+            h1 i {
+                font-size: 28px;
+            }
+            
+            .subtitle {
+                font-size: 15px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                background: transparent;
+                border: none;
+                padding: 0;
+                gap: 12px;
+            }
+            
+            .input-group i {
+                display: none;
+            }
+            
+            .input-group input {
+                background: #ffffff;
+                border: 1px solid #e8e6f0;
+                border-radius: 44px;
+                padding: 16px 20px;
+            }
+            
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="icon-badge">
+            <i class="fa-brands fa-youtube"></i>
+            <span>FREE TOOL</span>
+        </div>
+        <h1>
+            <i class="fa-regular fa-image"></i> 
+            YouTube 縮圖下載器
+        </h1>
+        <p class="subtitle">貼上連結，一鍵下載所有尺寸的高清縮圖</p>
+    </div>
+
+    <div class="input-wrapper">
+        <div class="input-group">
+            <i class="fa-brands fa-youtube"></i>
+            <input type="text" id="videoUrl" placeholder="貼上 YouTube 連結...">
+            <button class="btn-primary" onclick="loadThumbnails()">
+                <i class="fa-solid fa-download"></i> 下載縮圖
+            </button>
+        </div>
+    </div>
+
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p><i class="fa-regular fa-hourglass-half"></i> 載入中...</p>
+    </div>
+
+    <div id="errorContainer"></div>
+    <div id="videoInfo" class="video-info hidden">
+        <i class="fa-regular fa-circle-play"></i>
+        <h3></h3>
+    </div>
+    <div id="thumbnailGrid" class="thumbnail-grid"></div>
+
+    <div class="footer">
+        <p><i class="fa-regular fa-copyright"></i> 免費工具 · 無需註冊</p>
+    </div>
+</div>
+
+<script>
+    function getYouTubeVideoId(url) {
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?#]+)/,
+            /youtube\.com\/shorts\/([^&?#]+)/,
+            /youtube\.com\/embed\/([^&?#]+)/
+        ];
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match) return match[1];
+        }
+        return null;
+    }
+
+    function getThumbnails(videoId) {
+        return [
+            { quality: '4K', label: '最大尺寸', url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`, resolution: '1920 × 1080', icon: 'fa-star' },
+            { quality: 'HD', label: '高清', url: `https://img.youtube.com/vi/${videoId}/sddefault.jpg`, resolution: '640 × 480', icon: 'fa-camera' },
+            { quality: 'HIGH', label: '高畫質', url: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, resolution: '480 × 360', icon: 'fa-camera' },
+            { quality: 'MEDIUM', label: '中等', url: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`, resolution: '320 × 180', icon: 'fa-camera' },
+            { quality: 'DEFAULT', label: '預設', url: `https://img.youtube.com/vi/${videoId}/default.jpg`, resolution: '120 × 90', icon: 'fa-camera' }
+        ];
+    }
+
+    function imageExists(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
+    }
+
+    async function filterExisting(thumbnails) {
+        const results = [];
+        for (const thumb of thumbnails) {
+            if (await imageExists(thumb.url)) {
+                results.push(thumb);
+            }
+        }
+        return results;
+    }
+
+    async function getVideoTitle(videoUrl) {
+        try {
+            const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`);
+            const data = await res.json();
+            return data.title;
+        } catch {
+            return 'YouTube 影片';
+        }
+    }
+
+    async function downloadImage(url, filename) {
+        try {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(blobUrl);
+        } catch {
+            alert('下載失敗，請稍後再試');
+        }
+    }
+
+    function showError(msg) {
+        const container = document.getElementById('errorContainer');
+        container.innerHTML = `<div class="error"><i class="fa-solid fa-triangle-exclamation"></i> ${msg}</div>`;
+        setTimeout(() => container.innerHTML = '', 4000);
+    }
+
+    async function loadThumbnails() {
+        const url = document.getElementById('videoUrl').value.trim();
+        if (!url) {
+            showError('請輸入 YouTube 連結');
+            return;
+        }
+
+        const videoId = getYouTubeVideoId(url);
+        if (!videoId) {
+            showError('無效的 YouTube 連結');
+            return;
+        }
+
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('thumbnailGrid').innerHTML = '';
+        document.getElementById('videoInfo').classList.add('hidden');
+        document.getElementById('errorContainer').innerHTML = '';
+
+        try {
+            const title = await getVideoTitle(url);
+            
+            const infoDiv = document.getElementById('videoInfo');
+            infoDiv.querySelector('h3').textContent = title;
+            infoDiv.classList.remove('hidden');
+
+            const allThumbs = getThumbnails(videoId);
+            const available = await filterExisting(allThumbs);
+
+            if (available.length === 0) {
+                showError('無法載入縮圖');
+                return;
+            }
+
+            displayThumbnails(available, title);
+        } catch (err) {
+            showError('載入失敗，請檢查網絡連線');
+        } finally {
+            document.getElementById('loading').classList.add('hidden');
+        }
+    }
+
+    function displayThumbnails(thumbnails, title) {
+        const grid = document.getElementById('thumbnailGrid');
+        grid.innerHTML = '';
+        const safeTitle = title.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_').substring(0, 50);
+
+        thumbnails.forEach(thumb => {
+            const card = document.createElement('div');
+            card.className = 'thumbnail-card';
+            card.innerHTML = `
+                <img src="${thumb.url}" alt="${thumb.quality} thumbnail" loading="lazy">
+                <div class="thumbnail-meta">
+                    <div class="quality">
+                        <i class="fa-solid ${thumb.quality === '4K' ? 'fa-gem' : 'fa-image'}"></i>
+                        ${thumb.quality}
+                    </div>
+                    <div class="resolution">
+                        <i class="fa-regular fa-square"></i>
+                        ${thumb.resolution}
+                    </div>
+                    <button class="btn-download" data-url="${thumb.url}" data-filename="${safeTitle}_${thumb.quality}.jpg">
+                        <i class="fa-solid fa-download"></i> 下載 ${thumb.label}
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        document.querySelectorAll('.btn-download').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const url = btn.getAttribute('data-url');
+                const filename = btn.getAttribute('data-filename');
+                downloadImage(url, filename);
+            });
+        });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    document.getElementById('videoUrl').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') loadThumbnails();
+    });
+</script>
+</body>
+</html>
