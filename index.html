@@ -355,6 +355,57 @@
         .hidden {
             display: none;
         }
+		
+		/* WhatsApp 浮動按鈕 */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            text-decoration: none;
+            border: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background-color: #128C7E;
+        }
+
+        /* 提示 tooltip */
+        .whatsapp-tooltip {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: #1d1c1f;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 999;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .whatsapp-float:hover + .whatsapp-tooltip {
+            opacity: 1;
+        }
 
         /* 響應式 */
         @media (max-width: 640px) {
@@ -396,6 +447,18 @@
             .btn-primary {
                 width: 100%;
                 justify-content: center;
+            }
+			
+			.whatsapp-float {
+                width: 50px;
+                height: 50px;
+                font-size: 28px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .whatsapp-tooltip {
+                display: none;
             }
         }
     </style>
@@ -440,6 +503,15 @@
     <div class="footer">
         <p><i class="fa-regular fa-copyright"></i> 免費工具 · 無需註冊</p>
     </div>
+	
+	<!-- WhatsApp 浮動按鈕 -->
+	<a href="https://wa.me/85297587491" 
+	   class="whatsapp-float" 
+	   target="_blank"
+	   rel="noopener noreferrer">
+		<i class="fa-brands fa-whatsapp"></i>
+	</a>
+	<div class="whatsapp-tooltip">聯絡我們</div>
 </div>
 
 <script>
